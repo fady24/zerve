@@ -14,7 +14,7 @@ import com.csc.ignasia.selenium.KeywordResult;
 import com.csc.ignasia.selenium.keywords.KeywordHandler;
 import com.csc.fsg.ignasia.model.common.ComponentModel;
 
-s
+
 
 /**
 Keyword Id = 'Sample'
@@ -30,10 +30,16 @@ public class GetDBValueKeywordHandler implements KeywordHandler {
 	public KeywordResult process(WebDriver driver, HtmlObject htmlObject, ComponentModel componentModel, Map testData) {
 		KeywordResult result = new KeywordResult();
 		
+		
+		result.setResult(false);
+		result.setMessage("Nothing executed.");
+		URL url = null;
+		HttpURLConnection con = null;
+		int rc = 0;
+		String s =null, msg =null;
+		Boolean flag = false;
+		
 		try {
-
-			
-			 
 			String tablename = testData.get(componentModel.getParam1()).toString();
 		if (tablename == null || tablename.equals("")) {
 			result.setResult(true);
@@ -51,8 +57,8 @@ public class GetDBValueKeywordHandler implements KeywordHandler {
 			            String columnname = "columnname";
 			            String selector = "selector";
 			*/			
-			            URL url = new URL("http://localhost:81/Printer");
-			            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			            url = new URL("http://10.68.39.66:81/Printer");
+			            con = (HttpURLConnection) url.openConnection();
 			            con.setRequestMethod("GET");
 			            con.setRequestProperty("User-Agent", "USER_AGENT");
 			            
@@ -65,15 +71,13 @@ public class GetDBValueKeywordHandler implements KeywordHandler {
 			            con.setRequestHeader("columnname", columnname);
 			            con.setRequestHeader("selector",selector);
 			            */
+			            rc = con.getResponseCode();
 			            
-			            int rc = con.getResponseCode();
-			            
-			            String s = con.getResponseMessage();
+			            s = con.getResponseMessage();
 			           	
 			            //String table= con.getHeaderField("result");
-			            String msg= con.getHeaderField("msg");
-			            Boolean flag = Boolean.parseBoolean(con.getHeaderField("result"));
-			          	
+			            msg= con.getHeaderField("msg");
+			            flag = Boolean.parseBoolean(con.getHeaderField("result"));
 			          	
 			            if(rc==200)
 			            {		
@@ -83,16 +87,14 @@ public class GetDBValueKeywordHandler implements KeywordHandler {
 			            {
 							result.setResult(false);
 							result.setMessage("The request to the servlet couldnt be completed. Code returned:" + rc);
-			            }
-			            
-			            
+			            }  
 			        } 
-
-
 	}catch (Exception e) {
 		result.setResult(false);
 		result.setMessage("Exception occured. Message: " + e.getMessage());
     }
 
+		return result;
 	}
+	
 }
